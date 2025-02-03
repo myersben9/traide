@@ -8,7 +8,7 @@ import time
 import numpy as np
 
 # List to store top movers
-top_movers = []
+symbols = ['HCWB', 'UDKA', 'GHRS', 'BHAT', 'REBN', 'SOPA', 'BCTX', 'TGI', 'IVVD', 'KC']
 
 def get_daily_movers(percentage_change: int) -> List:
     """
@@ -118,44 +118,11 @@ def get_rsi(data: pd.DataFrame, timeperiod: int) -> pd.DataFrame:
         print(f"Error calculating RSI: {e}")
         return 0
 
-def get_stock_list(screener_stocks: List) -> List:
-    """
-    Output the top movers to a file.
-    """
-    # Convert to dataframe
-    df = pd.DataFrame(screener_stocks)
-    output_file = 'daily_movers.csv'
-
-    relevant_columns = [
-        "symbol",
-        "shortName",
-        "regularMarketPrice",
-        "regularMarketChangePercent",
-        "marketCap",
-        "regularMarketVolume",
-        "fiftyTwoWeekHigh",
-        "fiftyTwoWeekLow",
-        "regularMarketDayHigh",
-        "regularMarketDayLow",
-        "regularMarketPreviousClose",
-        "averageDailyVolume3Month"
-    ]
-    df = df[relevant_columns]
-    df = df.dropna(subset=['marketCap'])
-    # Save to CSV
-    df.to_csv(output_file, index=False)
-    
-    # return the symbols in a list
-    return df['symbol'].tolist()
-
-def main(percentage_change: int):
+def main(symbols: List) -> List:
     # Fetch stocks from the predefined screener
-    movers = get_daily_movers(percentage_change)
-    if movers:
-        symbols = get_stock_list(movers)
-    else:
-        print("No stocks found matching the criteria.")
-        return
+
+    # List to store top movers
+    daily_moves = []
 
     for symbol in symbols:
         data = get_stock_download(symbol, '2mo', '1d')
@@ -163,92 +130,21 @@ def main(percentage_change: int):
             roc = get_roc(data, 14)
             rsi = get_rsi(data, 14)
             adx = get_adx(data, 14)
-            top_movers.append({
+            daily_moves.append({
                 "symbol": symbol,
                 # "name": stock['shortName'] if 'shortName' in stock else '',
                 "roc": roc,
-                "rsi": rsi ,
+                "rsi": rsi,
                 "adx": adx,
             })
 
     # Output the top movers to a csv file
     output_file = 'top_movers.csv'
-    df = pd.DataFrame(top_movers)
+    df = pd.DataFrame(daily_moves)
     df.to_csv(output_file, index=False)
     print(f"Top movers saved to {output_file}")
-    return top_movers
 
 
 # Run the monitor
 if __name__ == "__main__":
-    top_movers = main(30)
-
-# def get_search_and_news(symbol : str) :
-#     """
-#     Fetch historical data for a given symbol.
-#     """
-#     try:
-#         # get list of quotes
-#         quotes = yf.Search(symbol, max_results=10).quotes
-
-#         # get list of news
-#         news = yf.Search(symbol, news_count=10).news
-
-#         # get list of related research
-#         research = yf.Search(symbol, include_research=True).research
-#         return quotes, news, research
-#     except Exception as e:
-#         print(f"Error fetching historical data for {symbol}: {e}")
-#         return None
-
-# Fetch stocks from the predefined screener
-# screener_stocks = get_daily_movers(5)
-
-# # Check if any stocks were found
-# if screener_stocks:
-#     # Convert the list of stocks to a DataFrame
-#     df = pd.DataFrame(screener_stocks)
-
-#     # If there is a null value as marketCap, we will drop it
-#     # df = df.dropna(subset=['marketCap'])
-
-#     relevant_columns = [
-#         "symbol",
-#         "shortName",
-#         "regularMarketPrice",
-#         "regularMarketChangePercent",
-#         "marketCap",
-#         "regularMarketVolume",
-#         "fiftyTwoWeekHigh",
-#         "fiftyTwoWeekLow",
-#         "regularMarketDayHigh",
-#         "regularMarketDayLow",
-#         "regularMarketPreviousClose",
-#         "averageDailyVolume3Month"
-#     ]
-#     df = df[relevant_columns]
-
-#     # Grab the symbols from the screener stocks and print them in a list
-#     symbols = df['symbol'].tolist()
-
-#     for symbol in symbols[:1]:
-#         quotes, news, research = get_search_and_news(symbol)
-#         if quotes:
-#             download_to_json(quotes, f"{symbol}_quotes.json")
-#         if news:
-#             download_to_json(news, f"{symbol}_news.json")
-#         if research:
-#             download_to_json(research, f"{symbol}_research.json")
-
-    # output_file = 'stock_screener_results.csv'
-    # df.to_csv(output_file, index=False)
-    # df.to_json('stock_screener_results.json', indent=4)
-    # print(f"Combined dataset saved to {output_file}")
-    
-    # # Display the first few rows of the dataset
-    # print(df.head())
-# else:
-#     print("No stocks to save.")
-
-
-# Create algo that checks which stocks are going up the fastest from the daily movers
+    main(symbols)
