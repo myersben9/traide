@@ -1,1 +1,0 @@
-The ROC (Rate of Change) and ADX (Average Directional Index) indicators show trend strength. A rising ADX suggests a strong trend, while ROC shows momentum shifts.

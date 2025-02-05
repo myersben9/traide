@@ -1,1 +1,0 @@
-The RSI (Relative Strength Index) chart measures momentum. Values above 70 indicate overbought conditions (potential sell), while values below 30 indicate oversold conditions (potential buy).

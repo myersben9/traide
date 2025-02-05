@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Configuration
 CONFIG = {
-    'percentage_change': 80,  # Lower threshold for day trading
+    'percentage_change': 20,  # Lower threshold for day trading
     'short_window': 10,      # Short-term moving average
     'long_window': 50,       # Long-term moving average
     'bollinger_window': 20,  # Bollinger Bands window
@@ -417,4 +417,4 @@ def main():
     logging.info("Top movers analysis completed.")
 
 if __name__ == "__main__":
-    main()
+    main() 
