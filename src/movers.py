@@ -4,8 +4,8 @@ import json
 import pandas as pd
 
 # Configuration constants
-PERCENTAGE_CHANGE: float = 50
-EXCHANGES: List[str] = ['NMS', 'NYQ','ASE', 'PCX', 'YHD', 'NCM']  # Supported exchanges
+PERCENTAGE_CHANGE: float = 80
+EXCHANGES: List[str] = ["NMS", "NGM", "NCM", "NYQ", "ASE", "PCX"]  # Supported exchanges
 
 class TopMovers:
     """
@@ -45,15 +45,34 @@ class TopMovers:
                 yfinance.EquityQuery('eq', ['region', 'us']),  # US region
                 yfinance.EquityQuery('is-in', ['exchange', *EXCHANGES]),  # Specific exchanges
             ])
+            screen = yfinance.screen(q, sortField='percentchange', sortAsc=True, size=250)
 
-            # Fetch the screened stocks
-            return yfinance.screen(q, sortField='percentchange', sortAsc=True, size=250)
+            # Put quotes in a csv file
+            quotes = screen['quotes']
+            # Remove quotes that don't have a firstTradeDateMilliseconds
+            quotes = [quote for quote in quotes if 'firstTradeDateMilliseconds' in quote]
+
+            # Pull stock history of the 
+
+            quotes_df = pd.DataFrame(quotes)
+
+            print(quotes_df.head())
+            # Save the quotes to a csv file
+            #
+            quotes_df.to_csv('data/top_movers.csv', index=False)
+
+
+
+            return screen
 
         except Exception as e:
             print(f"Error fetching stocks: {e}")
             return []
+
+
 # Example usage
 if __name__ == "__main__":
     top_movers = TopMovers(PERCENTAGE_CHANGE)
-    print(top_movers.symbols)  
+    with open('data/top_movers.json', 'w') as f:
+        json.dump(top_movers.screen, f, indent=4)
 
