@@ -4,13 +4,13 @@ import json
 import pandas as pd
 
 # Configuration constants
-PERCENTAGE_CHANGE: float = 80
+PERCENTAGE_CHANGE: float = 68
 EXCHANGES: List[str] = ["NMS", "NGM", "NCM", "NYQ", "ASE", "PCX"]  # Supported exchanges
 
 class TopMovers:
     """
     A class to fetch top movers from Yahoo Finance based on predefined screening
-    criteria.
+    criteria. Does not contain permarket movers.
 
     Attributes:
         percentage_change (float): The minimum percentage change to filter stocks.
@@ -30,6 +30,7 @@ class TopMovers:
         self.screen = self.screen_percentages()
         self.quotes = self.screen['quotes'] if self.screen and 'quotes' in self.screen else []
         self.symbols = [quote['symbol'] for quote in self.quotes]
+        self.response = self.top_movers_payload()
 
     def screen_percentages(self) -> List[str]:
         """
@@ -45,34 +46,42 @@ class TopMovers:
                 yfinance.EquityQuery('eq', ['region', 'us']),  # US region
                 yfinance.EquityQuery('is-in', ['exchange', *EXCHANGES]),  # Specific exchanges
             ])
-            screen = yfinance.screen(q, sortField='percentchange', sortAsc=True, size=250)
-
-            # Put quotes in a csv file
-            quotes = screen['quotes']
-            # Remove quotes that don't have a firstTradeDateMilliseconds
-            quotes = [quote for quote in quotes if 'firstTradeDateMilliseconds' in quote]
-
-            # Pull stock history of the 
-
-            quotes_df = pd.DataFrame(quotes)
-
-            print(quotes_df.head())
-            # Save the quotes to a csv file
-            #
-            quotes_df.to_csv('data/top_movers.csv', index=False)
+            screen = yfinance.screen(q, sortField='percentchange', sortAsc=False, size=250)
 
 
+            screen["quotes"] = [quote for quote in screen["quotes"] if 'firstTradeDateMilliseconds' in quote and quote['quoteSourceName'] != 'Delayed Quote']
 
             return screen
 
         except Exception as e:
             print(f"Error fetching stocks: {e}")
             return []
+        
+    # Make a Top Movers payload for the API with the top movers and there history
+
+    def top_movers_payload(self) -> Dict:
+        """
+        Create a payload for the API containing the top movers and their historical data.
+
+        Returns:
+            Dict: A dictionary containing the top movers and their historical data.
+        """
+        tickers = yfinance.Tickers(self.symbols)
+        history = tickers.history(period="1d", interval="1m", group_by='ticker')
+        # Make the payload
+        payload = {}       
+        for ticker in self.symbols:
+            payload[ticker] = pd.DataFrame(history[ticker]).to_dict(orient='records')
+ 
+        return payload
 
 
+        
 # Example usage
 if __name__ == "__main__":
     top_movers = TopMovers(PERCENTAGE_CHANGE)
-    with open('data/top_movers.json', 'w') as f:
-        json.dump(top_movers.screen, f, indent=4)
+    print(top_movers.symbols)
+    top_movers.top_movers_payload()
+
+    
 
