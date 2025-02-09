@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # Download stock data
-data = yf.download('LTRY', interval='1m', period='2d')
+data = yf.download('LTRY', interval='1m', period='1d')
 
-lookback_period = 90  # days
+
 
 # Calculate momentum
-data['Momentum'] = data['Close'].pct_change(periods=lookback_period)
+data['Momentum'] = data['Close'].pct_change(periods=10)
 
 # Generate signals
 data['Signal'] = np.where(data['Momentum'] > 0, 1.0, -1.0)

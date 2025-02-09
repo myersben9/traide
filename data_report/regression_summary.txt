@@ -1,0 +1,38 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                 Profit   R-squared:                       0.871
+Model:                            OLS   Adj. R-squared:                  0.869
+Method:                 Least Squares   F-statistic:                     387.0
+Date:                Sun, 09 Feb 2025   Prob (F-statistic):          1.49e-295
+Time:                        14:58:23   Log-Likelihood:                -849.82
+No. Observations:                 698   AIC:                             1726.
+Df Residuals:                     685   BIC:                             1785.
+Df Model:                          12                                         
+Covariance Type:            nonrobust                                         
+================================================================================
+                   coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------
+const           -0.2911      0.285     -1.022      0.307      -0.850       0.268
+RSI_Buy          0.0060      0.003      1.731      0.084      -0.001       0.013
+RSI_Sell         0.0065      0.005      1.302      0.193      -0.003       0.016
+MACD_Buy        -1.3875      0.245     -5.662      0.000      -1.869      -0.906
+MACD_Sell        1.8598      0.210      8.839      0.000       1.447       2.273
+ATR_Buy          2.6113      0.317      8.230      0.000       1.988       3.234
+ATR_Sell         5.2556      0.387     13.588      0.000       4.496       6.015
+Volume_Buy   -6.609e-08   1.61e-07     -0.411      0.681   -3.82e-07     2.5e-07
+Volume_Sell    3.37e-08   1.41e-07      0.240      0.811   -2.42e-07     3.1e-07
+Stoch_K_Buy      0.0011      0.004      0.291      0.771      -0.006       0.008
+Stoch_K_Sell    -0.0128      0.005     -2.502      0.013      -0.023      -0.003
+Stoch_D_Buy     -0.0034      0.003     -1.059      0.290      -0.010       0.003
+Stoch_D_Sell     0.0085      0.004      2.039      0.042       0.000       0.017
+==============================================================================
+Omnibus:                      439.735   Durbin-Watson:                   1.561
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            42404.687
+Skew:                           1.924   Prob(JB):                         0.00
+Kurtosis:                      40.990   Cond. No.                     8.06e+06
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 8.06e+06. This might indicate that there are
+strong multicollinearity or other numerical problems.

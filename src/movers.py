@@ -49,7 +49,8 @@ class TopMovers:
             screen = yfinance.screen(q, sortField='percentchange', sortAsc=False, size=250)
 
 
-            screen["quotes"] = [quote for quote in screen["quotes"] if 'firstTradeDateMilliseconds' in quote and quote['quoteSourceName'] != 'Delayed Quote']
+            screen["quotes"] = [quote for quote in screen["quotes"] if 'preMarketPrice' in quote]
+
 
             return screen
 
@@ -81,7 +82,5 @@ class TopMovers:
 if __name__ == "__main__":
     top_movers = TopMovers(PERCENTAGE_CHANGE)
     print(top_movers.symbols)
-    top_movers.top_movers_payload()
-
     
 
